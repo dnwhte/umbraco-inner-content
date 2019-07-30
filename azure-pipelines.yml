@@ -5,7 +5,7 @@ pool:
   vmImage: 'vs2017-win2016'
 
 variables:
-  version: 2.0.5.$(Build.BuildId)
+  version: 2.0.4.$(Build.BuildId)
 
 steps:
 - task: CmdLine@2

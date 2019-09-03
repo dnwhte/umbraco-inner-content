@@ -22,8 +22,9 @@ angular.module("umbraco").controller("Our.Umbraco.InnerContent.Controllers.DocTy
         vm.hidePrompt = hidePrompt;
 
         vm.sortableOptions = {
-            axis: "y",
-            containment: "parent",
+            connectWith: '.inner-content__group-doctypes',
+            containment: ".inner-content__groups",
+            axis: "y",            
             cursor: "move",
             handle: ".icon-navigation",
             opacity: 0.7,

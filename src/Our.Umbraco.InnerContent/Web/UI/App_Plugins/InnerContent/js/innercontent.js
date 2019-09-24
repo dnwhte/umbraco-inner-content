@@ -262,6 +262,10 @@ angular.module("umbraco").controller("Our.Umbraco.InnerContent.Controllers.Inner
                     if (blueprintConfig.skipSelect) {
                         createFromBlueprint(docType.key, blueprintIds[0]);
                     } else {
+                        $scope.selectedDocTypeBlueprints = Object.keys(docType.blueprints).map(function (k) {
+                            return { 'id': k, 'name': docType.blueprints[k] };
+                        });
+
                         $scope.selectContentType = false;
                         $scope.selectBlueprint = true;
                     }

@@ -39,14 +39,15 @@
 
     <ul class="umb-actions umb-actions-child" ng-show="selectBlueprint">
 
-        <li ng-repeat="(key, value) in selectedDocType.blueprints">
-            <a ng-click="createFromBlueprint(selectedDocType.key, key)">
+        <li ng-repeat="blueprint in selectedDocTypeBlueprints | orderBy:'name'">
+            <a ng-click="createFromBlueprint(selectedDocType.key, blueprint.id)">
                 <i class="large {{selectedDocType.icon}}"></i>
                 <span class="menu-label">
-                    {{value}}
+                    {{blueprint.name}}
                 </span>
             </a>
         </li>
+
 
         <li class="sep" ng-show="allowBlank">
             <a ng-click="createBlank(selectedDocType.key)">

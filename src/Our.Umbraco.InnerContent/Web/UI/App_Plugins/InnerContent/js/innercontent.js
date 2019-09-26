@@ -618,10 +618,11 @@ angular.module("umbraco.directives").directive("innerContentUnsavedChanges", [
 angular.module("umbraco").factory("innerContentService", [
 
     "$interpolate",
+    "$timeout",
     "localStorageService",
     "Our.Umbraco.InnerContent.Resources.InnerContentResources",
 
-    function ($interpolate, localStorageService, icResources) {
+    function ($interpolate, $timeout, localStorageService, icResources) {
 
         var self = {};
 
@@ -717,9 +718,18 @@ angular.module("umbraco").factory("innerContentService", [
                 itm.$index = idx;
 
                 // Execute the name expression
-                var newName = nameExp(itm);
-                if (newName && (newName = $.trim(newName)) && itm.name !== newName) {
-                    itm.name = newName;
+                var setName = function () {
+                    var newName = nameExp(itm);
+                    if (newName && (newName = $.trim(newName)) && itm.name !== newName) {
+                        itm.name = newName;
+                    }
+                };
+
+                setName();
+
+                // hacky attempt to make the asynchronous angularjs filters render the real name
+                if (contentType.nameTemplate.includes('ncNodeName') && itm.name === 'Loading...') {
+                    $timeout(setName, 500);
                 }
 
                 // Remove temporary index property

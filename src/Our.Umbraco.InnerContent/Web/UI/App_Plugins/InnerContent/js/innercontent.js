@@ -24,7 +24,7 @@ angular.module("umbraco").controller("Our.Umbraco.InnerContent.Controllers.DocTy
         vm.sortableOptions = {
             connectWith: '.inner-content__group-doctypes',
             containment: ".inner-content__groups",
-            axis: "y",            
+            axis: "y",
             cursor: "move",
             handle: ".icon-navigation",
             opacity: 0.7,
@@ -64,6 +64,7 @@ angular.module("umbraco").controller("Our.Umbraco.InnerContent.Controllers.DocTy
                         return {
                             guid: d.icContentTypeGuid,
                             nameTemplate: d.nameTemplate,
+                            displayName: d.displayName,
                             icon: ct.icon,
                             name: ct.name,
                             alias: ct.alias
@@ -109,7 +110,8 @@ angular.module("umbraco").controller("Our.Umbraco.InnerContent.Controllers.DocTy
                 var docTypes = _.map(i.docTypes, function (d) {
                     return {
                         icContentTypeGuid: d.guid,
-                        nameTemplate: d.nameTemplate
+                        nameTemplate: d.nameTemplate,
+                        displayName: d.displayName
                     };
                 });
 
@@ -137,6 +139,7 @@ angular.module("umbraco").controller("Our.Umbraco.InnerContent.Controllers.DocTy
             var newItem = {
                 guid: "",
                 nameTemplate: "",
+                displayName: "",
                 icon: "",
                 name: "",
                 alias: ""
@@ -336,6 +339,7 @@ angular.module("umbraco.directives").directive("innerContentOverlay", [
                 var process = function (editorModel, dbModel2) {
                     var n = angular.copy(editorModel);
                     n.key = innerContentService.generateUid(); // Create new ID for item
+                    n.icContentTypeName = getDisplayName(contentType.icContentTypeGuid);
                     return innerContentService.extendEditorModel(n, dbModel2);
                 };
 
@@ -362,6 +366,15 @@ angular.module("umbraco.directives").directive("innerContentOverlay", [
                 } else {
                     return contentTypes;
                 }
+            };
+
+            var getDisplayName = function (guid) {
+                var cts = getFlattenedContentTypes(scope.config.contentTypes);
+                var itm = _.find(cts, function (ct) {
+                    return ct.icContentTypeGuid.toLowerCase() === guid.toLowerCase();
+                });
+
+                return itm.displayName;
             };
 
             scope.contentTypePickerOverlay = {
@@ -434,7 +447,7 @@ angular.module("umbraco.directives").directive("innerContentOverlay", [
 
             scope.openContentEditorOverlay = function () {
                 setOverlayClasses(scope.config.propertyAlias, scope.currentItem.contentTypeAlias);
-                scope.contentEditorOverlay.title = "Edit " + scope.currentItem.contentTypeName;
+                scope.contentEditorOverlay.title = "Edit " + (scope.currentItem.icContentTypeName || scope.currentItem.contentTypeName);
                 scope.contentEditorOverlay.dialogData = { item: scope.currentItem };
                 scope.contentEditorOverlay.show = true;
             };
@@ -518,9 +531,13 @@ angular.module("umbraco.directives").directive("innerContentOverlay", [
 
                         groupedContentTypes = _.map(groupedContentTypes, function (g) {
                             g.docTypes = _.map(g.docTypes, function (i) {
-                                return _.find(contentTypes, function (c) {
+                                var ct = _.find(contentTypes, function (c) {
                                     return c.guid === i.icContentTypeGuid;
                                 });
+
+                                ct.name = i.displayName || ct.name;
+
+                                return ct;
                             });
                             return g;
                         });
@@ -756,10 +773,10 @@ angular.module("umbraco").factory("innerContentService", [
 
                 scaffold.key = self.generateUid();
                 scaffold.icContentTypeGuid = contentType.icContentTypeGuid;
+                scaffold.icContentTypeName = "Untitled";
                 scaffold.name = "Untitled";
 
                 return self.extendEditorModel(scaffold, dbModel);
-
             });
 
         };
@@ -795,7 +812,8 @@ angular.module("umbraco").factory("innerContentService", [
                 key: model.key,
                 name: model.name,
                 icon: model.icon,
-                icContentTypeGuid: model.icContentTypeGuid
+                icContentTypeGuid: model.icContentTypeGuid,
+                icContentTypeName: model.icContentTypeName || model.contentTypeName
             };
 
             for (var t = 0; t < model.tabs.length; t++) {

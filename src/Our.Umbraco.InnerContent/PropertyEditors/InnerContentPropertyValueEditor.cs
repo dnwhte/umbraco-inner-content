@@ -235,7 +235,8 @@ namespace Our.Umbraco.InnerContent.PropertyEditors
                 || propKey == "key"
                 || propKey == "icon"
                 || propKey == InnerContentConstants.ContentTypeGuidPropertyKey
-                || propKey == InnerContentConstants.ContentTypeAliasPropertyKey;
+                || propKey == InnerContentConstants.ContentTypeAliasPropertyKey
+                || propKey == InnerContentConstants.ContentTypeNamePropertyKey;
         }
 
         #endregion

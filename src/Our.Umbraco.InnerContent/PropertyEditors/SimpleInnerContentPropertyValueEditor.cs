@@ -97,7 +97,9 @@ namespace Our.Umbraco.InnerContent.PropertyEditors
 
             if (token is JObject jObj)
             {
-                if (jObj[InnerContentConstants.ContentTypeGuidPropertyKey] != null || jObj[InnerContentConstants.ContentTypeAliasPropertyKey] != null)
+                if (jObj[InnerContentConstants.ContentTypeGuidPropertyKey] != null 
+                    || jObj[InnerContentConstants.ContentTypeAliasPropertyKey] != null
+                    || jObj[InnerContentConstants.ContentTypeNamePropertyKey] != null)
                 {
                     ConvertInnerContentDbToEditor(jObj, dataTypeService);
                 }

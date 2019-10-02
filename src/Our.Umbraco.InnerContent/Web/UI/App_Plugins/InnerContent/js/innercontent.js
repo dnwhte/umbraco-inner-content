@@ -313,10 +313,11 @@ angular.module("umbraco").controller("Our.Umbraco.InnerContent.Controllers.Inner
 angular.module("umbraco.directives").directive("innerContentOverlay", [
 
     "$q",
+    "$timeout",
     "overlayHelper",
     "innerContentService",
 
-    function ($q, overlayHelper, innerContentService) {
+    function ($q, $timeout, overlayHelper, innerContentService) {
 
         function link(scope, el, attr, ctrl) {
             scope.config.editorModels = scope.config.editorModels || {};
@@ -450,6 +451,7 @@ angular.module("umbraco.directives").directive("innerContentOverlay", [
                 scope.contentEditorOverlay.title = "Edit " + (scope.currentItem.icContentTypeName || scope.currentItem.contentTypeName);
                 scope.contentEditorOverlay.dialogData = { item: scope.currentItem };
                 scope.contentEditorOverlay.show = true;
+                focusOverlay(el[0]);
             };
 
             scope.closeContentEditorOverlay = function () {
@@ -462,6 +464,15 @@ angular.module("umbraco.directives").directive("innerContentOverlay", [
                 scope.closeContentTypePickerOverlay();
                 scope.closeContentEditorOverlay();
                 scope.config.show = false;
+            };
+
+            function focusOverlay(element) {
+                $timeout(function () {
+                    var focusableEl = element.querySelector('a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])');
+                    if (focusableEl) {
+                        focusableEl.focus();
+                    }
+                }, 0);
             };
 
             function resetOverlayClasses() {

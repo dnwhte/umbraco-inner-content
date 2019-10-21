@@ -1,0 +1,31 @@
+﻿<div class="inner-content__doctypepicker-overlay" ng-controller="Umbraco.Overlays.ItemPickerOverlay">
+
+    <div class="form-search" ng-hide="model.filter === false" style="margin-bottom: 15px;">
+        <i class="icon-search"></i>
+        <input type="text"
+               ng-model="searchTerm"
+               class="umb-search-field search-query input-block-level -full-width-input"
+               localize="placeholder"
+               placeholder="@placeholders_filter"
+               umb-auto-focus
+               no-dirty-check />
+    </div>
+
+    <ul class="umb-checkbox-list"
+        ng-repeat="group in model.availableItems"
+        ng-hide="(group.contentTypes | compareArrays:model.selectedItems:'alias' | filter:searchTerm).length < 1">
+        <li class="inner-content__doctypepicker-overlay__group" ng-show="model.availableItems.length > 1">
+            <i class="icon-folder umb-checkbox-list__item-icon"></i>
+            {{group.containerPath}}
+        </li>
+        <li class="umb-checkbox-list__item"
+            ng-repeat="ct in group.contentTypes | compareArrays:model.selectedItems:'alias' | orderBy:'name' | filter:searchTerm">
+            <label class="umb-checkbox-list__item-text" ng-click="selectItem(ct)">
+                <i class="{{ ct.icon }} umb-checkbox-list__item-icon"></i>
+                {{ ct.name }}
+                <span class="umb-checkbox-list__item-caption">({{ ct.alias }})</span>
+            </label>
+        </li>
+    </ul>
+
+</div>

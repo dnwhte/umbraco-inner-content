@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
@@ -8,10 +8,12 @@ using Our.Umbraco.InnerContent.Helpers;
 using Our.Umbraco.InnerContent.Web.WebApi.Filters;
 using Umbraco.Core;
 using Umbraco.Core.Dictionary;
+using Umbraco.Core.Models;
 using Umbraco.Core.Services;
 using Umbraco.Web.Editors;
 using Umbraco.Web.Models.ContentEditing;
 using Umbraco.Web.Mvc;
+using Notification = Umbraco.Web.Models.ContentEditing.Notification;
 
 namespace Our.Umbraco.InnerContent.Web.Controllers
 {
@@ -19,7 +21,7 @@ namespace Our.Umbraco.InnerContent.Web.Controllers
     public class InnerContentApiController : UmbracoAuthorizedJsonController
     {
         [HttpGet]
-        public IEnumerable<object> GetAllContentTypes()
+        public IEnumerable<object> GetAllContentTypes(bool includeContainerPaths = false)
         {
             return Services.ContentTypeService.GetAllContentTypes()
                 .OrderBy(x => x.Name)
@@ -30,7 +32,8 @@ namespace Our.Umbraco.InnerContent.Web.Controllers
                     name = UmbracoDictionaryTranslate(x.Name),
                     alias = x.Alias,
                     icon = string.IsNullOrWhiteSpace(x.Icon) || x.Icon == ".sprTreeFolder" ? "icon-folder" : x.Icon,
-                    tabs = x.CompositionPropertyGroups.Select(y => y.Name).Distinct()
+                    tabs = x.CompositionPropertyGroups.Select(y => y.Name).Distinct(),
+                    containerPath = includeContainerPaths ? GetContainerPath(x) : ""
                 });
         }
 
@@ -129,6 +132,12 @@ namespace Our.Umbraco.InnerContent.Web.Controllers
             }
 
             return _cultureDictionary[text].IfNullOrWhiteSpace(text);
+        }
+
+        private string GetContainerPath(IContentType ct)
+        {
+            EntityContainer[] containers = Services.ContentTypeService.GetContentTypeContainers(ct)?.ToArray();
+            return $"/{(containers != null && containers.Any() ? $"{string.Join("/", containers.Select(c => c.Name))}/" : null)}";
         }
 
         private static ICultureDictionary _cultureDictionary;

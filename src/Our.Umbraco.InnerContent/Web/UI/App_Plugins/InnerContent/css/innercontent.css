@@ -22,6 +22,8 @@
     width: 100%;
 }
 
+
+
 /* Inner Content - Doc Type Picker Groups */
 
 .inner-content__doctypepicker .inner-content__groups {
@@ -49,6 +51,38 @@
 
 .inner-content__doctypepicker .inner-content__group-doctypes {
 }
+
+
+
+/* Inner Content - Doc Type Picker Overlay */
+
+.inner-content__doctypepicker-overlay .umb-checkbox-list {
+    margin-bottom: 20px;
+}
+
+.inner-content__doctypepicker-overlay .umb-checkbox-list__item-icon {
+    margin-right: 7px;
+}
+
+.inner-content__doctypepicker-overlay__group {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.inner-content__doctypepicker-overlay .umb-checkbox-list__item {
+    margin-bottom: 0;
+}
+
+.inner-content__doctypepicker-overlay .umb-checkbox-list__item-text {
+    padding: 7px 10px;
+    cursor: pointer;
+}
+
+.inner-content__doctypepicker-overlay .umb-checkbox-list__item-caption {
+    color: #a2a1a6;
+    margin-left: 5px;
+}
+
 
 
 /* Inner Content - Content Overlay Panel */

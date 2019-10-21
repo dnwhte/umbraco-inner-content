@@ -2,12 +2,14 @@
 angular.module("umbraco").controller("Our.Umbraco.InnerContent.Controllers.DocTypePickerController", [
 
     "$scope",
-    "innerContentService",
+    "$filter",
+    "innerContentService",    
 
-    function ($scope, innerContentService) {
+    function ($scope, $filter, innerContentService) {
 
         var vm = this;
         vm.docTypes = [];
+        vm.docTypesByContainer = [];
         vm.selectedDocTypes = [];
         vm.docTypeGroups = [];
         vm.addDocType = addDocType;
@@ -41,8 +43,20 @@ angular.module("umbraco").controller("Our.Umbraco.InnerContent.Controllers.DocTy
             content: null
         };
 
-        innerContentService.getAllContentTypes().then(function (docTypes) {
+        innerContentService.getAllContentTypes(true).then(function (docTypes) {
             vm.docTypes = docTypes;
+            vm.docTypesByContainer = $filter("orderBy")(
+                _.map(
+                    _.groupBy(vm.docTypes, 'containerPath'), function (group) {
+                        return {
+                            containerPath: group[0].containerPath,
+                            contentTypes: group
+                        };
+                    }
+                ), function (group) {
+                    return group.containerPath.replace(/\//g, " ");
+                });
+
             init();
             updateSelectedDocTypes();
 
@@ -156,8 +170,8 @@ angular.module("umbraco").controller("Our.Umbraco.InnerContent.Controllers.DocTy
 
         function openDocTypePicker(item, group, isNew) {
             vm.docTypePicker = {
-                view: "itempicker",
-                availableItems: vm.docTypes,
+                view: Umbraco.Sys.ServerVariables.umbracoSettings.appPluginsPath + "/innercontent/views/innercontent.doctypepicker.overlay.html",
+                availableItems: vm.docTypesByContainer,
                 selectedItems: vm.selectedDocTypes,
                 show: true,
                 submit: function (model) {
@@ -766,8 +780,9 @@ angular.module("umbraco").factory("innerContentService", [
 
         };
 
-        self.getAllContentTypes = function () {
-            return icResources.getAllContentTypes();
+        self.getAllContentTypes = function (includeContainerPaths) {
+            var _includeContainerPaths = includeContainerPaths ? includeContainerPaths : false;
+            return icResources.getAllContentTypes(_includeContainerPaths);
         };
 
         self.getContentTypesByGuid = function (guids) {
@@ -957,11 +972,12 @@ angular.module("umbraco.resources").factory("Our.Umbraco.InnerContent.Resources.
 
     function ($http, umbRequestHelper) {
         return {
-            getAllContentTypes: function () {
+            getAllContentTypes: function (includeContainerPaths) {
                 return umbRequestHelper.resourcePromise(
                     $http({
                         url: umbRequestHelper.convertVirtualToAbsolutePath("~/umbraco/backoffice/InnerContent/InnerContentApi/GetAllContentTypes"),
-                        method: "GET"
+                        method: "GET",
+                        params: { includeContainerPaths: includeContainerPaths }
                     }),
                     "Failed to retrieve content types"
                 );

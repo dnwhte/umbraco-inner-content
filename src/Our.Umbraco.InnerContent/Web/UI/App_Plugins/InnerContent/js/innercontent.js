@@ -330,8 +330,9 @@ angular.module("umbraco.directives").directive("innerContentOverlay", [
     "$timeout",
     "overlayHelper",
     "innerContentService",
+    "editorState",
 
-    function ($q, $timeout, overlayHelper, innerContentService) {
+    function ($q, $timeout, overlayHelper, innerContentService, editorState) {
 
         function link(scope, el, attr, ctrl) {
             scope.config.editorModels = scope.config.editorModels || {};
@@ -461,6 +462,7 @@ angular.module("umbraco.directives").directive("innerContentOverlay", [
             };
 
             scope.openContentEditorOverlay = function () {
+                editorState.set(scope.currentItem);
                 setOverlayClasses(scope.config.propertyAlias, scope.currentItem.contentTypeAlias);
                 scope.contentEditorOverlay.title = "Edit " + (scope.currentItem.icContentTypeName || scope.currentItem.contentTypeName);
                 scope.contentEditorOverlay.dialogData = { item: scope.currentItem };
